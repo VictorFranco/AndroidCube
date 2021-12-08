@@ -26,11 +26,27 @@ public class MatrixOperations {
         result[2][0] = point[2];
         return result;
     }
+    static float[][] mult(float num,float[][]a) {
+        int colsA = a[0].length;
+        int rowsA = a.length;
+        float result[][] = new float[rowsA][colsA];
+        for (int i=0 ; i<rowsA ; i++)
+            for (int j = 0; j<colsA; j++)
+                result[i][j] = a[i][j] * num;
+        return result;
+    }
+    static float[] translate_xy(float x,float y,float[]point) {
+        float result[] = new float[3];
+        result[0] = point[0] + x;
+        result[1] = point[1] + y;
+        result[2] = point[2];
+        return result;
+    }
     static void logMatrix(float[][]a) {
         StringBuilder message= new StringBuilder();
         message.append("\n\n------------\n");
         for (int i=0 ; i<a.length ; i++) {
-            for (int j = 0; j < a[0].length; j++)
+            for (int j = 0; j<a[0].length; j++)
                 message.append(a[i][j] + " ");
             message.append("\n");
         }
