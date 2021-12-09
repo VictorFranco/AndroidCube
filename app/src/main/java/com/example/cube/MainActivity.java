@@ -6,12 +6,13 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
-
+    Handler handler = new Handler();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
     class DrawingArea extends View {
         float[][] vertices = new float[8][3];
+        double angle = 0;
         public DrawingArea(Context context) {
             super(context);
             int counter = 0;
@@ -31,8 +33,6 @@ public class MainActivity extends AppCompatActivity {
             vertices = mult(150,vertices);
         }
         public void onDraw(Canvas canvas) {
-            for (int i=0 ; i<8 ; i++)
-                vertices[i] = translate_xy(getWidth()/2,getHeight()/2,vertices[i]);
 
             Paint paint = new Paint();
             paint.setStyle(Paint.Style.STROKE);
@@ -43,10 +43,36 @@ public class MainActivity extends AppCompatActivity {
                     {1,0,0},
                     {0,1,0}
             };
+            float[][] rotateZ = {
+                    {(float) Math.cos(angle), (float) -Math.sin(angle), 0},
+                    {(float) Math.sin(angle), (float)  Math.cos(angle), 0},
+                    {            0          ,              0          , 1},
+            };
+            float[][] rotateX = {
+                    {1 ,           0            ,              0          },
+                    {0 , (float) Math.cos(angle), (float) -Math.sin(angle)},
+                    {0 , (float) Math.sin(angle), (float)  Math.cos(angle)},
+            };
+            float[][] rotateY = {
+                    {(float) Math.cos(angle),  0  ,(float) -Math.sin(angle)},
+                    {           0           ,  1  ,            0           },
+                    {(float) Math.sin(angle),  0  ,(float)  Math.cos(angle)},
+            };
             for (int i=0 ; i<8 ; i++) { // draw vertices
-                float projected[][] = matmul(projection,vecToMatrix(vertices[i]));
+                float rotated[][]   = matmul(rotateZ,vecToMatrix(vertices[i]));
+                rotated = matmul(rotateX,rotated);
+                rotated = matmul(rotateY,rotated);
+                float projected[][] = matmul(projection,rotated);
+                projected = translate_xy(getWidth()/2,getHeight()/2,projected);
                 canvas.drawPoint(projected[0][0], projected[1][0], paint);
             }
+            angle += 0.001;
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    invalidate();
+                }
+            }, 10);
         }
     }
 }
