@@ -35,11 +35,10 @@ public class MatrixOperations {
                 result[i][j] = a[i][j] * num;
         return result;
     }
-    static float[] translate_xy(float x,float y,float[]point) {
-        float result[] = new float[3];
-        result[0] = point[0] + x;
-        result[1] = point[1] + y;
-        result[2] = point[2];
+    static float[][] translate_xy(float x,float y,float[][]point) {
+        float result[][] = new float[2][1];
+        result[0][0] = point[0][0]+x;
+        result[1][0] = point[1][0]+y;
         return result;
     }
     static void logMatrix(float[][]a) {
