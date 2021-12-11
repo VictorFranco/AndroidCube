@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
     class DrawingArea extends View {
         float[][] vertices = new float[8][3];
+        float[][] p_vertices = new float[8][2]; // projected vertices
         double angle = 0;
         public DrawingArea(Context context) {
             super(context);
@@ -33,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
             vertices = mult(150,vertices);
         }
         public void onDraw(Canvas canvas) {
-
             Paint paint = new Paint();
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeWidth(25);
@@ -65,7 +65,10 @@ public class MainActivity extends AppCompatActivity {
                 float projected[][] = matmul(projection,rotated);
                 projected = translate_xy(getWidth()/2,getHeight()/2,projected);
                 canvas.drawPoint(projected[0][0], projected[1][0], paint);
+                p_vertices[i][0] = projected[0][0];
+                p_vertices[i][1] = projected[1][0];
             }
+            connect(0,1,canvas,paint,p_vertices);
             angle += 0.001;
             handler.postDelayed(new Runnable() {
                 @Override
@@ -73,6 +76,11 @@ public class MainActivity extends AppCompatActivity {
                     invalidate();
                 }
             }, 10);
+        }
+        public void connect(int p1, int p2, Canvas canvas, Paint paint, float[][] points) {
+            float[] vertex1 = points[p1];
+            float[] vertex2 = points[p2];
+            canvas.drawLine(vertex1[0],vertex1[1],vertex2[0],vertex2[1],paint);
         }
     }
 }
