@@ -59,17 +59,21 @@ public class MainActivity extends AppCompatActivity {
                     {(float) Math.sin(angle),  0  ,(float)  Math.cos(angle)},
             };
             for (int i=0 ; i<8 ; i++) { // draw vertices
-                float rotated[][]   = matmul(rotateZ,vecToMatrix(vertices[i]));
+                float[][] rotated   = matmul(rotateZ,vecToMatrix(vertices[i]));
                 rotated = matmul(rotateX,rotated);
                 rotated = matmul(rotateY,rotated);
-                float projected[][] = matmul(projection,rotated);
+                float[][] projected = matmul(projection,rotated);
                 projected = translate_xy(getWidth()/2,getHeight()/2,projected);
-                canvas.drawPoint(projected[0][0], projected[1][0], paint);
                 p_vertices[i][0] = projected[0][0];
                 p_vertices[i][1] = projected[1][0];
             }
-            connect(0,1,canvas,paint,p_vertices);
-            angle += 0.001;
+            int[] pattern = {0, 1, 3, 2}; // relation among points
+            for (int i=0 ; i<4 ; i++) {
+                connect(pattern[i], pattern[(i+1)%4], canvas, paint, p_vertices);
+                connect(pattern[i]+4, pattern[(i+1)%4]+4, canvas, paint, p_vertices);
+                connect(pattern[i], pattern[i]+4, canvas, paint, p_vertices);
+            }
+            angle += 0.005;
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
