@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
         float[][] vertices = new float[8][3];
         float[][] p_vertices = new float[8][2]; // projected vertices
         double angle = 0;
+        float distance = 4;
         public DrawingArea(Context context) {
             super(context);
             int counter = 0;
@@ -31,18 +32,13 @@ public class MainActivity extends AppCompatActivity {
                 for (int j=-1 ; j<=1 ; j+=2)
                     for (int k=-1 ; k<=1 ; k+=2)
                         vertices[counter++] = new float[]{i, j, k};
-            vertices = mult(150,vertices);
         }
         public void onDraw(Canvas canvas) {
             Paint paint = new Paint();
             paint.setStyle(Paint.Style.STROKE);
-            paint.setStrokeWidth(25);
+            paint.setStrokeWidth(20);
             paint.setStrokeCap(Paint.Cap.ROUND);
             paint.setColor(Color.BLACK);
-            float[][] projection = {
-                    {1,0,0},
-                    {0,1,0}
-            };
             float[][] rotateZ = {
                     {(float) Math.cos(angle), (float) -Math.sin(angle), 0},
                     {(float) Math.sin(angle), (float)  Math.cos(angle), 0},
@@ -62,7 +58,13 @@ public class MainActivity extends AppCompatActivity {
                 float[][] rotated   = matmul(rotateZ,vecToMatrix(vertices[i]));
                 rotated = matmul(rotateX,rotated);
                 rotated = matmul(rotateY,rotated);
+                float z = 1/(distance - rotated[2][0]); // set perspective
+                float[][] projection = {
+                        {z,0,0},
+                        {0,z,0}
+                };
                 float[][] projected = matmul(projection,rotated);
+                projected = mult(500,projected); // set relative size
                 projected = translate_xy(getWidth()/2,getHeight()/2,projected);
                 p_vertices[i][0] = projected[0][0];
                 p_vertices[i][1] = projected[1][0];
